@@ -1,7 +1,7 @@
 let x = 0;
 let y = 0;
 let hitted = false;
-let level = 1;
+let level =1;
 
 export function initPhysics(startLevel = 1) {
   level = startLevel;
