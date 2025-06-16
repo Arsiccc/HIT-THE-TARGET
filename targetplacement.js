@@ -1,38 +1,38 @@
 let x = 0;
 let y = 0;
 let hitted = false;
-let level =1;
+let level = 1;
 
-export function initPhysics(startLevel = 1) {
+export function initTarget(startLevel = 1) {
   level = startLevel;
-  randomizePosition();
+  randomizeTargetPosition();
 }
 
-export function randomizePosition() {
-  x = Math.random() * 1.6 - 0.8; // između -0.8 i 0.8
-  y = Math.random() * 1.6 - 0.8; // između -0.8 i 0.8
+export function randomizeTargetPosition() {
+  x = Math.random() * 1.6 - 0.8; // random između -0.8 i 0.8 po X
+  y = Math.random() * 1.6 - 0.8; // random između -0.8 i 0.8 po Y
   hitted = false;
 }
 
-export function updatePosition() {
-  // ništa se ne menja jer nema kretanja
+export function updateTarget() {
+  // meta se ne pomera — prazna funkcija
 }
 
-export function getPosition() {
+export function getTargetPosition() {
   return { x, y };
 }
 
-export function hit() {
+export function hitTarget() {
   hitted = true;
 }
 
-export function isHitted() {
+export function isTargetHitted() {
   return hitted;
 }
 
 export function nextLevel() {
   level++;
-  randomizePosition();
+  randomizeTargetPosition();
 }
 
 export function getLevel() {

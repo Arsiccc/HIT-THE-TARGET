@@ -1,0 +1,18 @@
+u render :
+
+target.updateTarget(); // ne radi ništa, ali neka stoji zbog fleksibilnosti
+  const { x, y } = target.getTargetPosition();
+  gl.uniform2f(u_offset, x, y);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+
+  van:
+  target.initTarget();
+render();
+
+document.addEventListener('keydown', e => {
+  if (e.key === ' ') {
+    target.hitTarget();
+    setTimeout(() => {
+      target.nextLevel();
+    }, 1000);
