@@ -1,5 +1,5 @@
 let x = 0;
-let y = Math.random() * (maxDistance - minDistance) + minDistance;
+let y =Math.random() * (maxDistance - minDistance) + minDistance;
 let speed = Math.random() * (max - min) + min;
 let minPosition = -1.0;
 let maxPosition = 1.0;
