@@ -1,7 +1,7 @@
 #version 300 es
 precision mediump float;
 
-layout(location = 0) in vec3 in_position;
+in vec3 in_position;
 
 uniform mat4 u_mvp;
 
