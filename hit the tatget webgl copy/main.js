@@ -435,6 +435,7 @@ let gameState = {
     gravity: -15, // Povećana gravitacija za realniji osećaj
     isJumping: false,
     onGround: true,
+	showHitMessage: false,
     jumpForce: 8, // Povećana snaga skoka
     movementSpeed: 150, // Povećana brzina kretanja
     arrows: [],
@@ -451,7 +452,10 @@ let gameState = {
     targetSize: 1.5, // Povećana veličina mete
     playerSize: [0.5, 1.8, 0.5], // Realnije dimenzije igrača
     gameStarted: false,
-    lastTime: 0
+    lastTime: 0,
+	
+    hitMessageTime: 0,
+
 };
 
 // Input handling
@@ -571,26 +575,53 @@ function shootArrow() {
         position: [...gameState.cameraPos],
         direction: [...gameState.cameraFront],
         speed: speed,
-        lifetime: 5,
-        gravity: true // Dodajemo gravitaciju strelama
+        lifetime: 10,
+        gravity: true ,
+		stuck: false,
+		stuckPosition: null,
+		sruckNormal: [0,1,0]// Dodajemo gravitaciju strelama
     };
     gameState.arrows.push(arrow);
 }
+function checkArrowCollisions() {
+    for (let i = gameState.arrows.length - 1; i >= 0; i--) {
+        const arrow = gameState.arrows[i];
+        if (arrow.stuck) continue;
 
+        // Provera kolizije sa metom
+        if (vec3.distance(arrow.position, gameState.targetPos) < 2.0) {
+            arrow.stuck = true;
+            arrow.stuckPosition = [...arrow.position];
+            gameState.showHitMessage = true;
+            gameState.hitMessageTime = 1.5;
+            continue;
+        }
+
+        // Provera kolizije sa zemljom (y < 0)
+        if (arrow.position[1] < 0) {
+            arrow.stuck = true;
+            arrow.stuckPosition = [...arrow.position];
+            arrow.stuckPosition[1] = 0; // Postavi na površinu zemlje
+            continue;
+        }
+    }
+}
 function updateArrows(deltaTime) {
     for (let i = gameState.arrows.length - 1; i >= 0; i--) {
         const arrow = gameState.arrows[i];
-        
+        if (arrow.stuck) continue;
+    
         // Ažuriranje pozicije strele
-        vec3.scaleAndAdd(arrow.position, arrow.position, arrow.direction, arrow.speed * deltaTime);
-        
+         vec3.scaleAndAdd(arrow.position, arrow.position, arrow.direction, arrow.speed * deltaTime);
+         
+		 
         // Primena gravitacije na strelu
         if (arrow.gravity) {
             arrow.direction[1] -= 0.5 * deltaTime; // Pad strele
             vec3.normalize(arrow.direction, arrow.direction); // Normalizujemo smer
         }
         
-        arrow.lifetime -= deltaTime;
+       
 
         // Provera kolizije sa metom
         if (checkArrowTargetCollision(arrow.position, gameState.targetPos)) {
@@ -628,6 +659,15 @@ function checkPlayerGroundCollision() {
     } else {
         gameState.onGround = false;
     }
+}
+function drawHitMessage() {
+    const canvas = document.querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    ctx.font = '48px Arial';
+    ctx.fillStyle = 'red';
+    ctx.textAlign = 'center';
+    ctx.fillText('HIT!', canvas.width/2, canvas.height/2);
 }
 
 function checkPlayerBoundaryCollision() {
@@ -683,7 +723,7 @@ async function main() {
     gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, stride, 0);
 
     // Učitavanje modela strele
-    const arrowVertices = await loadOBJ_noIndices("../shapes/arrow.obj");
+    const arrowVertices = await loadOBJ_noIndices("../shapes/arrowTurned.obj");
     const arrowVAO = gl.createVertexArray();
     gl.bindVertexArray(arrowVAO);
 
@@ -801,6 +841,7 @@ async function main() {
             // Dodatna rotacija za pravilno postavljanje strele
             const verticalAngle = Math.asin(-arrow.direction[1]);
             mat4.rotateX(modelMatArrow, modelMatArrow, verticalAngle);
+			
             
             const mvpMatArrow = mat4.create();
             mat4.multiply(mvpMatArrow, projectionMat, viewMat);
