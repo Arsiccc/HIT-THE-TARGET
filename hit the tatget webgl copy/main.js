@@ -253,7 +253,7 @@
 //   render();
 // }
 
-main();
+//main();
 import WebGLUtils from '../WebGLUtils.js'; // prilagodi ako treba
 import { mat4, vec3 } from 'https://cdn.jsdelivr.net/npm/gl-matrix@3.4.0/+esm';
 
@@ -281,7 +281,17 @@ function updateCameraPosition() {
 
 function getRandomPosition(min, max) {
   return Math.random() * (max - min) + min;
+  
 }
+// Ovo sprečava pokretanje dok ne klikne Play
+let gameStarted = false;
+
+document.getElementById('play-button').addEventListener('click', () => {
+  document.getElementById('ui-overlay').style.display = 'none';
+  gameStarted = true;
+  
+
+
 
 async function main() {
   const gl = WebGLUtils.initWebGL();
@@ -374,6 +384,7 @@ async function main() {
 }
 
 main();
+});
 
 async function loadOBJ_noIndices(url) {
   const text = await fetch(url).then(res => res.text());
